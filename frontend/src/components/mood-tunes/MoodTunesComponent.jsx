@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const MoodTunesComponent = () => {
@@ -6,38 +6,6 @@ const MoodTunesComponent = () => {
   const videoRef = useRef(null);
 
   const [isOpenCamera, setIsOpenCamera] = useState(true);
-
-  const capture = useCallback(async () => {
-    const imageSrc = videoRef.current.getScreenshot({
-      width: 640,
-      height: 640,
-    });
-
-    // Convert base64 to Blob
-    const byteString = atob(imageSrc.split(",")[1]);
-    const mimeString = imageSrc.split(",")[0].split(":")[1].split(";")[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    const blob = new Blob([ab], { type: mimeString });
-
-    const formData = new FormData();
-    formData.append("image", blob, "image.jpg");
-
-    try {
-      const response = await fetch("http://localhost:5000/predict", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-      console.log(result);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }, []);
 
   const pageRender = (e) => {
     e.preventDefault();
@@ -85,7 +53,6 @@ const MoodTunesComponent = () => {
             <div className="video-on">
               <video
                 ref={videoRef}
-                screenshotFormat="image/jpeg"
                 style={{ width: "100%", height: "300px" }}
                 autoPlay
                 muted
@@ -110,9 +77,6 @@ const MoodTunesComponent = () => {
               <div class="material-icons smile">sentiment_very_satisfied</div>
               <span>Happy</span>
             </div>
-          </div>
-          <div className="capture-btn">
-            <button onClick={capture}>Capture and Analyze Mood</button>
           </div>
         </div>
         <div className="music-box">
