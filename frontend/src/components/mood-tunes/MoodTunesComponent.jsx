@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import * as faceapi from "face-api.js";
 
 const MoodTunesComponent = () => {
   const navigate = useNavigate();
   const videoRef = useRef(null);
-
   const [isOpenCamera, setIsOpenCamera] = useState(true);
 
   const pageRender = (e) => {
@@ -15,6 +16,29 @@ const MoodTunesComponent = () => {
     navigate(path);
   };
 
+  const capture = useCallback(async () => {
+    const imageSrc = videoRef.current.getScreenshot();
+    const blob = await fetch(imageSrc).then((res) => res.blob());
+
+    const formData = new FormData();
+    formData.append("image", blob, "webcam_image.jpg");
+
+    try {
+      const response = await axios.post(
+        "http://0.0.0.0:5000/predict",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Response:", response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }, []);
+
   useEffect(() => {
     const getVideo = async () => {
       try {
@@ -23,10 +47,8 @@ const MoodTunesComponent = () => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
 
-          // 비디오 준비가 완료되었는지 확인
           videoRef.current.addEventListener("loadedmetadata", () => {
             videoRef.current.play().catch((error) => {
-              // 여기에 실패 처리 로직을 추가할 수 있습니다.
               setIsOpenCamera(false);
             });
           });
@@ -54,6 +76,7 @@ const MoodTunesComponent = () => {
               <video
                 ref={videoRef}
                 style={{ width: "100%", height: "300px" }}
+                screenshotFormat="image/jpeg"
                 autoPlay
                 muted
               />

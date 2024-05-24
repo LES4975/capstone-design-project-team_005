@@ -1,37 +1,49 @@
 from flask import Flask, request, jsonify
-import io
 import torch
 from PIL import Image
-import torchvision.transforms as T
-from ultralytics import YOLO
+from io import BytesIO
 
 app = Flask(__name__)
 
-# YOLOv8 모델 불러오기
-model = YOLO('best.pt')
+# 모델 로드
+model_path = 'model\3rd_best.pt'
+model = torch.hub.load('ultralytics/yolov8', 'custom', path=model_path)
 
-# 예측 함수
-def predict(image):
-    transform = T.Compose([T.ToTensor()])
-    img = transform(image).unsqueeze(0)  # 배치 차원 추가
-    results = model(img)
-    return results
+def transform_image(image_bytes):
+    image = Image.open(BytesIO(image_bytes)).convert("RGB")
+    return image
 
 @app.route('/predict', methods=['POST'])
-def predict_endpoint():
+def predict():
     if 'image' not in request.files:
-        return jsonify({'error': 'No image file in request'}), 400
+        return jsonify({'error': 'No image file provided'}), 400
     
-    file = request.files['image']
-    img_bytes = file.read()
-    img = Image.open(io.BytesIO(img_bytes))
+    image_file = request.files['image']
+    image_bytes = image_file.read()
+    image = transform_image(image_bytes)
+    
+    # 예측
+    results = model(image)
+    
+    # 예측된 클래스 이름과 ID 추출
+    predictions = results.pandas().xyxy[0]
+    classes = predictions['name'].tolist()
+    
+    # 이미지 ID (예: 파일 이름)
+    image_id = image_file.filename
+    
+    response = {
+        'id': image_id,
+        'classes': classes
+    }
+    
+    return jsonify(response)
 
-    # 예측 수행
-    results = predict(img)
-    
-    # 결과 반환 (결과를 JSON 형태로 반환)
-    predictions = results.pandas().xyxy[0].to_dict(orient='records')  # 예측 결과를 딕셔너리 형태로 변환
-    return jsonify(predictions)
+# response json 형식 :
+# {
+#     "id": "image.jpg",
+#     "classes": ["cat", "dog"]
+# }
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
