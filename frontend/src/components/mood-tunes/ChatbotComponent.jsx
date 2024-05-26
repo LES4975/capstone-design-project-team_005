@@ -1,6 +1,34 @@
 import React from "react";
 
 const ChatbotComponent = () => {
+  const [username, setUsername] = useState(""); // 사용자 이름을 관리하는 상태
+  const [message, setMessage] = useState(""); // 사용자가 입력한 메시지를 관리하는 상태
+  const [chatHistory, setChatHistory] = useState([]); // 채팅 내역을 관리하는 상태
+
+  const sendMessage = async (username, message) => {
+    const response = await fetch("http://3.36.159.136:8080/chatbot", {
+      // 변경된 엔드포인트
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username, message: message }),
+    });
+    const data = await response.json();
+    setChatHistory([
+      ...chatHistory,
+      { user: "me", message: message },
+      { user: "bot", message: data.response },
+    ]);
+    setMessage(""); // 메시지 전송 후 입력 필드를 비웁니다.
+  };
+
+  const handleSendClick = () => {
+    if (username && message) {
+      sendMessage(username, message);
+    }
+  };
+
   return (
     <div className="chat-wrapper">
       <main className="chat-contents">
@@ -12,58 +40,30 @@ const ChatbotComponent = () => {
           </p>
           <section>
             <div className="chat-item-inner">
-              {/* 내가 보낸 챗 */}
-              <div className="chat-me">
-                <div className="chat-row">
-                  <div className="chat">
-                    <p>Hi</p>
+              {/* 채팅 내역 표시 */}
+              {chatHistory.map((chat, index) => (
+                <div
+                  key={index}
+                  className={chat.user === "me" ? "chat-me" : "chat-you"}
+                >
+                  {chat.user === "bot" && (
+                    <div className="chat-user">
+                      <div className="profile">
+                        <img
+                          src="/images/chatbot.svg"
+                          alt="profile"
+                          width={30}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div className="chat-row">
+                    <div className="chat">
+                      <p>{chat.message}</p>
+                    </div>
                   </div>
                 </div>
-                <div className="chat-row">
-                  <div className="chat">
-                    <p>
-                      I really enjoyed the “Happy Vibes” playlist. The upbeat
-                      tracks really lifted my mood!
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 상대방이 보낸 챗 */}
-              <div className="chat-you">
-                {/* 프로필 */}
-                <div className="chat-user">
-                  <div className="profile">
-                    <img src="/images/chatbot.svg" alt="profile" width={30} />
-                  </div>
-                </div>
-
-                {/* 말풍선 1 */}
-                <div className="chat-row">
-                  <div className="chat">
-                    <p>hello</p>
-                  </div>
-                </div>
-                {/* 말풍선 2 */}
-                <div className="chat-row ">
-                  <div className="chat">
-                    <p>
-                      That’s great to hear! Our team carefully curated that
-                      playlist to bring joy and positivity. We’re glad it
-                      resonated with you.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 내가 보낸 챗 */}
-              <div className="chat-me">
-                <div className="chat-row">
-                  <div className="chat">
-                    <p>Thank you!</p>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </section>
           {/* <!-- 메시지 입력 --> */}
@@ -73,9 +73,11 @@ const ChatbotComponent = () => {
                 type="text"
                 placeholder="Type your message here…"
                 className="input"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)} // 입력 필드 변경 핸들러
               />
             </div>
-            <button className="send-btn">
+            <button className="send-btn" onClick={handleSendClick}>
               <img src="/images/icon_send.svg" alt="send" />
             </button>
           </div>
