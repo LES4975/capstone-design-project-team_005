@@ -4,59 +4,97 @@ import { useNavigate } from "react-router-dom";
 const MoodTunesComponent = () => {
   const navigate = useNavigate();
   const videoRef = useRef(null);
-
+  const canvasRef = useRef(null);
   const [isOpenCamera, setIsOpenCamera] = useState(true);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [playlist, setPlaylist] = useState([
+    { id: 1, title: "모두 행복해져라", artist: "한올", liked: false, playing: false },
+    { id: 2, title: "My mistake", artist: "Gabriel Aplin", liked: false, playing: false },
+    { id: 3, title: "Thursday", artist: "Jess Glynne", liked: false, playing: false },
+  ]);
 
   const pageRender = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
     const { path } = e.currentTarget.dataset;
     navigate(path);
   };
 
-  useEffect(() => {
-    const getVideo = async () => {
-      try {
-        const constraints = { video: true };
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-
-          // 비디오 준비가 완료되었는지 확인
-          videoRef.current.addEventListener("loadedmetadata", () => {
-            videoRef.current.play().catch((error) => {
-              // 여기에 실패 처리 로직을 추가할 수 있습니다.
-              setIsOpenCamera(false);
-            });
-          });
-        }
-      } catch (error) {
-        alert("비디오 사용을 허용해주세요.");
-        setIsOpenCamera(false);
+  const startVideoStream = async () => {
+    try {
+      const constraints = { video: { width: 640, height: 640 } };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
       }
-    };
+    } catch (error) {
+      alert("비디오 사용을 허용해주세요.");
+      setIsOpenCamera(false);
+    }
+  };
 
-    getVideo();
+  useEffect(() => {
+    startVideoStream();
   }, []);
+
+  const toggleLike = (id) => {
+    setPlaylist((prevPlaylist) =>
+      prevPlaylist.map((song) =>
+        song.id === id ? { ...song, liked: !song.liked } : song
+      )
+    );
+  };
+
+  const togglePlay = (id) => {
+    setPlaylist((prevPlaylist) =>
+      prevPlaylist.map((song) =>
+        song.id === id ? { ...song, playing: !song.playing } : song
+      )
+    );
+  };
+
+  const captureImage = () => {
+    if (videoRef.current && canvasRef.current) {
+      const context = canvasRef.current.getContext("2d");
+      canvasRef.current.width = videoRef.current.videoWidth;
+      canvasRef.current.height = videoRef.current.videoHeight;
+      context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+      const imageDataUrl = canvasRef.current.toDataURL("image/png");
+      setCapturedImage(imageDataUrl);
+    }
+  };
+
+  const retakeImage = () => {
+    setCapturedImage(null);
+    startVideoStream();
+  };
 
   return (
     <div className="music-wrapper">
       <main className="music-contents">
         <div className="recognition-box">
-          <h2>Face Recognition</h2>
-          <p>
-            Please allow camera access to analyze your facial <br /> expression
-            and determine your mood.
-          </p>
+          <h2>표정 분석</h2>
+          <p>표정 분석과 기분 진단을 위해 카메라 접근을 허용해주세요.</p>
           {isOpenCamera ? (
             <div className="video-on">
-              <video
-                ref={videoRef}
-                style={{ width: "100%", height: "300px" }}
-                autoPlay
-                muted
-              />
+              {capturedImage ? (
+                <div className="centered">
+                  <img src={capturedImage} alt="캡처된 이미지" style={{ width: "300px", height: "300px" }} />
+                  <button className="btn btn--reverse" onClick={retakeImage}>다시 찍기</button>
+                </div>
+              ) : (
+                <div className="centered">
+                  <video
+                    ref={videoRef}
+                    style={{ width: "100%", height: "300px" }}
+                    autoPlay
+                    muted
+                  />
+                  <button className="btn btn--reverse" onClick={captureImage}>화면 캡처하기</button>
+                </div>
+              )}
+              <canvas ref={canvasRef} style={{ display: 'none' }} />
             </div>
           ) : (
             <div className="video-off">
@@ -72,22 +110,33 @@ const MoodTunesComponent = () => {
             </div>
           )}
           <div className="mood">
-            <h3>Your mood:</h3>
+            <h3><br/><br/><br/>당신의 기분:</h3>
             <div className="mood-icon">
-              <div class="material-icons smile">sentiment_very_satisfied</div>
-              <span>Happy</span>
+              <div className="mood-item">
+                <div className="material-icons" style={{ color: "limegreen" }}>sentiment_very_satisfied</div>
+                <span> 기쁨</span>
+              </div>
+              <div className="mood-item">
+                <div className="material-icons" style={{ color: "blue" }}>sentiment_dissatisfied</div>
+                <span> 슬픔</span>
+              </div>
+              <div className="mood-item">
+                <div className="material-icons" style={{ color: "red" }}>sentiment_very_dissatisfied</div>
+                <span> 분노</span>
+              </div>
+              <div className="mood-item">
+                <div className="material-icons" style={{ color: "grey" }}>sentiment_neutral</div>
+                <span> 불안</span>
+              </div>
             </div>
           </div>
         </div>
         <div className="music-box">
-          <h2>Recommended Music Lists</h2>
-          <p>
-            Based on your mood, we’ve curated personalized playlists <br /> for
-            you to enjoy.
-          </p>
+          <h2>맞춤형 플레이리스트</h2>
+          <p>당신의 기분에 맞춰 준비한 음악 플레이리스트를 즐겨보세요.</p>
           <ul className="music-list">
-            <li class="music-list-table">
-              <dl class="table-header">
+            <li className="music-list-table">
+              <dl className="table-header">
                 <dd>
                   <span>곡명</span>
                 </dd>
@@ -101,55 +150,35 @@ const MoodTunesComponent = () => {
                   <span>재생</span>
                 </dd>
               </dl>
-              <div class="table-body">
-                <dl class="table-row">
-                  <dd>모두 행복해져라</dd>
-                  <dd>한올</dd>
-                  <dd>
-                    <div className="like-btn">
-                      <input type="checkbox" id={`music-1`} />
-                      <label role="button" htmlFor={`music-1`}></label>
-                    </div>
-                  </dd>
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-1`} />
-                      <label role="button" htmlFor={`play-1`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>My mistake</dd>
-                  <dd>Gabriel Aplin</dd>
-                  <dd>
-                    <div className="like-btn">
-                      <input type="checkbox" id={`music-2`} />
-                      <label role="button" htmlFor={`music-2`}></label>
-                    </div>
-                  </dd>
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-2`} />
-                      <label role="button" htmlFor={`play-2`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>Thursday</dd>
-                  <dd>Jess Glynne</dd>
-                  <dd>
-                    <div className="like-btn">
-                      <input type="checkbox" id={`music-3`} />
-                      <label role="button" htmlFor={`music-3`}></label>
-                    </div>
-                  </dd>
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-3`} />
-                      <label role="button" htmlFor={`play-3`}></label>
-                    </div>
-                  </dd>
-                </dl>
+              <div className="table-body">
+                {playlist.map((song) => (
+                  <dl key={song.id} className="table-row">
+                    <dd>{song.title}</dd>
+                    <dd>{song.artist}</dd>
+                    <dd>
+                      <div className="like-btn">
+                        <input
+                          type="checkbox"
+                          checked={song.liked}
+                          onChange={() => toggleLike(song.id)}
+                          id={`music-${song.id}`}
+                        />
+                        <label role="button" htmlFor={`music-${song.id}`}></label>
+                      </div>
+                    </dd>
+                    <dd>
+                      <div className="play-btn">
+                        <input
+                          type="checkbox"
+                          checked={song.playing}
+                          onChange={() => togglePlay(song.id)}
+                          id={`play-${song.id}`}
+                        />
+                        <label role="button" htmlFor={`play-${song.id}`}></label>
+                      </div>
+                    </dd>
+                  </dl>
+                ))}
               </div>
             </li>
           </ul>
@@ -159,7 +188,7 @@ const MoodTunesComponent = () => {
               data-path="/chatbot"
               onClick={pageRender}
             >
-              Move to Chatbot Service
+              챗봇 서비스로 이동하기
             </button>
           </div>
         </div>

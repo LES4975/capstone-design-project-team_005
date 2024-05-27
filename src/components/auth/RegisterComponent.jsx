@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RegisterComponent = () => {
   const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const pageRender = (e) => {
     e.preventDefault();
@@ -12,13 +18,35 @@ const RegisterComponent = () => {
     navigate(path);
   };
 
+  const handleRegister = (e) => {
+    e.preventDefault();
+    if (!name || !username || !password || !confirmPassword) {
+      setError('모든 필드를 입력해주세요.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+
+    // 여기에 회원가입 로직 추가 (예: API 호출)
+
+    setTimeout(() => {
+      // 회원가입 성공 시
+      setIsLoading(false);
+      navigate('/login');
+    }, 1000);
+  };
+
   return (
     <div className="login-wrapper">
       <header className="login-header">
         <div className="inner">
           <div className="header-logo">
             {/* 로고 */}
-            <a href="/#header-logo" data-path="/" onClick={pageRender}>
+            <a href="/#header-logo" data-path="/" onClick={pageRender} aria-label="MoodTunes 로고">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="40px"
@@ -35,60 +63,57 @@ const RegisterComponent = () => {
       </header>
       <main className="register-contents">
         <div className="register-box">
-          <h2>Register</h2>
-          <div className="register-input">
+          <h2>회원가입</h2>
+          <form onSubmit={handleRegister} className="register-input">
             <div className="input-include-label">
               <input
                 className="input"
                 type="text"
-                placeholder="Enter your name"
+                placeholder="이름을 입력해주세요."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
               />
-              <label>Name</label>
+              <label>이름</label>
             </div>
-            <p className="error-desc">에러메시지를 넣어주세요.</p>
-          </div>
-          <div className="login-input">
             <div className="input-include-label">
               <input
                 className="input"
                 type="text"
-                placeholder="Enter your id"
+                placeholder="아이디를 입력해주세요."
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
               />
-              <label>ID</label>
+              <label>아이디</label>
             </div>
-            <p className="error-desc"></p>
-          </div>
-
-          <div className="login-input">
             <div className="input-include-label">
               <input
                 className="input"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="비밀번호를 입력해주세요."
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
-              <label>Password</label>
+              <label>비밀번호</label>
             </div>
-            <p className="error-desc"></p>
-          </div>
-          <div className="login-input">
             <div className="input-include-label">
               <input
                 className="input"
                 type="password"
-                placeholder="Confirm your password"
+                placeholder="비밀번호를 다시 한번 입력해주세요."
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
               />
-              <label>Confirm Password</label>
+              <label>비밀번호 확인</label>
             </div>
-            <p className="error-desc"></p>
-          </div>
-          <button
-            type="button"
-            className="register-btn"
-            data-path="/login"
-            onClick={pageRender}
-          >
-            가입하기
-          </button>
+            {error && <p className="error-desc">{error}</p>}
+            <button type="submit" className="register-btn" disabled={isLoading}>
+              {isLoading ? '가입 중...' : '가입하기'}
+            </button>
+          </form>
         </div>
       </main>
       <footer className="main-footer">

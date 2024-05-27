@@ -6,6 +6,7 @@ import { Outlet } from "react-router-dom";
 const Layout = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userId, setUserId] = useState('suyun0601'); // 사용자 ID를 상태로 관리
 
   const pageRender = (e) => {
     e.preventDefault();
@@ -24,20 +25,21 @@ const Layout = () => {
             <div className="layout-header">
               <div className="mypage">
                 <div
-                  class="material-icons"
+                  className="material-icons"
+                  aria-label="Toggle menu"
                   onClick={() => setIsMenuOpen((prev) => !prev)}
                 >
                   account_circle
                 </div>
                 {isMenuOpen && (
                   <div className="side-header-menu">
-                    <div className="menu-item my">suyun0601</div>
+                    <div className="menu-item my">{userId}</div>
                     <div
                       className="menu-item logout"
                       data-path="/"
                       onClick={pageRender}
                     >
-                      <div class="material-icons">logout</div>
+                      <div className="material-icons">logout</div>
                       로그아웃
                     </div>
                   </div>

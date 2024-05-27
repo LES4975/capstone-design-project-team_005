@@ -36,3 +36,46 @@
     transform: rotate(360deg);
   }
 }
+
+@font-face {
+  font-family: "DoHyeon";
+  font-weight: normal;
+  src: url("./fonts/BMDOHYEON_ttf.ttf");
+}
+
+@font-face {
+  font-family: "GmarketBold";
+  src: url("./fonts/GmarketSansTTFBold.ttf");
+}
+
+@font-face {
+  font-family: "GmarketMedium";
+  src: url("./fonts/GmarketSansTTFMedium.ttf");
+}
+
+@font-face {
+  font-family: "GmarketLight";
+  src: url("./fonts/GmarketSansTTFLight.ttf");
+}
+
+@font-face {
+  font-family: "NanumC";
+  src: url(./fonts/NanumSquareNeo-cBd.ttf);
+}
+
+@font-face {
+  font-family: "NanumD";
+  src: url(./fonts/NanumSquareNeo-dEb.ttf);
+}
+
+@font-face {
+  font-family: "MontBold";
+  src: url(./fonts/Montserrat-Bold.ttf);
+}
+
+@font-face {
+  font-family: "MontLight";
+  src: url(./fonts/Montserrat-Light.ttf);
+}
+
+
