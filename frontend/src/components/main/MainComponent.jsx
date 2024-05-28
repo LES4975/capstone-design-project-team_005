@@ -32,10 +32,10 @@ const MainComponent = () => {
           </div>
           <div className="main-header-btn">
             <button type="button" data-path="/login" onClick={pageRender}>
-              Login
+              로그인
             </button>
             <button type="button" data-path="/register" onClick={pageRender}>
-              Register
+              회원가입
             </button>
           </div>
         </div>
@@ -43,10 +43,10 @@ const MainComponent = () => {
       <main className="main-contents">
         <div className="inner">
           <div className="welcome-box">
-            <h2>Welcome to MoodTunes</h2>
+            <h2>MoodTunes</h2>
             <p>
-              Let us analyze your mood through facial recognition and provide
-              you with a personalized music playlist.
+              표정 분석을 통해 당신의 기분을 진단하고, 
+              <br/>맞춤형 음악 플레이리스트를 제공해드립니다.
             </p>
             <div className="main-icon">
               <svg
@@ -65,14 +65,14 @@ const MainComponent = () => {
             data-path="/login"
             onClick={pageRender}
           >
-            Login
+            로그인
           </button>
           <button
             className="btn btn--reverse"
             data-path="/register"
             onClick={pageRender}
           >
-            Register
+            회원가입
           </button>
         </div>
       </main>

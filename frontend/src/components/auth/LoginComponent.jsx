@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginComponent = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const pageRender = (e) => {
     e.preventDefault();
@@ -12,13 +16,30 @@ const LoginComponent = () => {
     navigate(path);
   };
 
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (!username || !password) {
+      setError('아이디와 비밀번호를 입력해주세요.');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+
+    // 여기에 로그인 로직 추가 (예: API 호출)
+
+    setTimeout(() => {
+      // 로그인 성공 시
+      setIsLoading(false);
+      navigate('/home');
+    }, 1000);
+  };
+
   return (
     <div className="login-wrapper">
       <header className="login-header">
         <div className="inner">
           <div className="header-logo">
-            {/* 로고 */}
-            <a href="/#header-logo" data-path="/" onClick={pageRender}>
+            <a href="/#header-logo" data-path="/" onClick={pageRender} aria-label="MoodTunes 로고">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="40px"
@@ -35,33 +56,32 @@ const LoginComponent = () => {
       </header>
       <main className="login-contents">
         <div className="login-box">
-          <h2>Login</h2>
-          <div className="login-input">
+          <h2>MoodTunes</h2>
+          <form onSubmit={handleLogin} className="login-input">
             {/* <!-- 아이디 입력 --> */}
-            <input className="input" type="email" placeholder="아이디" />
+            <input
+              className="input"
+              type="text"
+              placeholder="아이디"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
             {/* <!-- 비밀번호 입력 --> */}
-            <input className="input" type="password" placeholder="비밀번호" />
-          </div>
-          <button
-            type="button"
-            className="login-btn"
-            data-path="/home"
-            onClick={pageRender}
-          >
-            로그인
-          </button>
-
+            <input
+              className="input"
+              type="password"
+              placeholder="비밀번호"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {error && <p className="error-message">{error}</p>}
+            <button type="submit" className="login-btn" disabled={isLoading}>
+              {isLoading ? '로그인 중...' : '로그인'}
+            </button>
+          </form>
           <div className="login-bottom">
-            {/* <a
-              className="hover:text-primary focus:text-primary"
-              role="button"
-              href="#login-find-password"
-              // data-path="/reset-password"
-              onClick={pageRender}
-            >
-              비밀번호찾기
-            </a> */}
-            {/* <span className="mx-3.5 text-gray-darken">|</span> */}
             <a
               className="hover:text-primary focus:text-primary"
               role="button"
@@ -72,17 +92,6 @@ const LoginComponent = () => {
               회원가입
             </a>
           </div>
-
-          {/* <div className="divide"></div>
-
-          <button className="spotify-login relative flex w-full items-center justify-center rounded px-6 py-4 lg:py-4.5">
-            <img
-              src="/images/spotify.svg"
-              alt="spotify sign in"
-              className="absolute"
-            />
-            <span className="font-bold">spotify로 계속하기</span>
-          </button> */}
         </div>
       </main>
       <footer className="main-footer">
