@@ -5,6 +5,8 @@ from openai import OpenAI
 import os
 from config import Config
 from models import db, User, Conversation
+import csv
+from fuzzywuzzy import process
 
 
 app = Flask(__name__)
@@ -20,6 +22,27 @@ with app.app_context():
 
 chatbot_api=app.config['CHATBOT_KEY']
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", chatbot_api))
+
+
+# Load the CSV file containing predefined questions and answers
+def load_qa_pairs(filepath):
+    qa_pairs = {}
+    with open(filepath, mode='r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header
+        for row in reader:
+            question, answer = row
+            qa_pairs[question] = answer
+    return qa_pairs
+
+qa_pairs = load_qa_pairs('questions_answers.csv')
+
+def get_best_response(user_input, qa_pairs):
+    questions = list(qa_pairs.keys())
+    best_match, score = process.extractOne(user_input, questions)
+    if score > 70:  # 유사도 기준을 알아서 조정하기
+        return qa_pairs[best_match]
+    return None
 
 @app.route('/')
 def home():
@@ -73,4 +96,4 @@ def chat():
     return jsonify({"response": response_text})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=5001)

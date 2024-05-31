@@ -10,3 +10,4 @@ Flask
 openai
 python-dotenv
 flask_sqlalchemy
+fuzzywuzzy

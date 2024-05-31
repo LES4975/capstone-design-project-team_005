@@ -17,7 +17,7 @@ def predict(image):
     results = model(img)
     return results
 
-@app.route('/predict', methods=['POST'])
+@app.route('/mood-tunes', methods=['POST'])
 def predict_endpoint():
     if 'image' not in request.files:
         return jsonify({'error': 'No image file in request'}), 400
