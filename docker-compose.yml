@@ -3,8 +3,8 @@ version: "3.8"
 services:
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: ./frontend/
+      dockerfile: ./dockerfile
     ports:
       - "3000:3000"
     volumes:
@@ -15,20 +15,20 @@ services:
 
   facemood_api:
     build:
-      context: ./ai_api/api1
-      dockerfile: Dockerfile
+      context: ./ai_api/facemood_api/
+      dockerfile: ./dockerfile
     ports:
       - "5000:5000"
     volumes:
-      - ./ai_api/api1:/app
+      - ./ai_api/facemood_api:/app
 
   chatbot_api:
     build:
-      context: ./ai_api/api2
-      dockerfile: Dockerfile
+      context: ./ai_api/chatbot_api/
+      dockerfile: ./dockerfile
     env_file:
-      - .env
+      - ./ai_api/chatbot_api/.env
     ports:
       - "5001:5001"
     volumes:
-      - ./ai_api/api2:/app
+      - ./ai_api/chatbot_api:/app
