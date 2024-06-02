@@ -9,6 +9,11 @@ const MoodTunesComponent = () => {
   const [isOpenCamera, setIsOpenCamera] = useState(true);
   const [songs, setSongs] = useState({});
   const [emotion, setEmotion] = useState("");
+  const handleLike = (songName, songUrl) => {
+  const likedSongs = JSON.parse(localStorage.getItem('likedSongs')) || [];
+  likedSongs.push({ songName, songUrl });
+  localStorage.setItem('likedSongs', JSON.stringify(likedSongs));
+};
 
   const pageRender = (e) => {
     e.preventDefault();
@@ -27,9 +32,11 @@ const MoodTunesComponent = () => {
           videoRef.current.srcObject = stream;
 
           videoRef.current.addEventListener("loadedmetadata", () => {
-            videoRef.current.play().catch((error) => {
-              setIsOpenCamera(false);
-            });
+            if (videoRef.current) {
+              videoRef.current.play().catch((error) => {
+                setIsOpenCamera(false);
+              });
+            }
           });
         }
       } catch (error) {
@@ -120,30 +127,30 @@ const MoodTunesComponent = () => {
               </dl>
               <div class="table-body">
                 {Object.entries(songs).map(([songName, songUrl], index) => (
-                  <dl class="table-row" key={index}>
-                    <dd>{songName}</dd>
-                    <dd>
-                      <div className="like-btn">
-                        <input type="checkbox" id={`music-${index}`} />
-                        <label role="button" htmlFor={`music-${index}`}></label>
-                      </div>
-                    </dd>
-                    <dd>
-                      <div className="play-btn">
-                        <a href={songUrl} target="_blank" rel="noopener noreferrer">
-                          <img src="/images/play.svg" alt="play" width={30} />
-                        </a>
-                      </div>
-                    </dd>
-                  </dl>
+                    <dl class="table-row" key={index}>
+                      <dd>{songName}</dd>
+                      <dd>
+                        <div className="like-btn">
+                          <input type="checkbox" id={`music-${index}`} onClick={() => handleLike(songName, songUrl)}/>
+                          <label role="button" htmlFor={`music-${index}`}></label>
+                        </div>
+                      </dd>
+                      <dd>
+                        <div className="play-btn">
+                          <a href={songUrl} target="_blank" rel="noopener noreferrer">
+                            <img src="/images/play.svg" alt="play" width={30}/>
+                          </a>
+                        </div>
+                      </dd>
+                    </dl>
                 ))}
               </div>
             </li>
           </ul>
           <div className="bottom-btn">
             <button
-              className="btn btn--reverse"
-              data-path="/likes"
+                className="btn btn--reverse"
+                data-path="/likes"
               onClick={pageRender}
             >
               Check Likes
