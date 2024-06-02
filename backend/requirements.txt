@@ -1,5 +1,7 @@
-Flask
+FastAPI
+uvicorn
 torch
 torchvision
 Pillow
 pandas
+ultralytics
