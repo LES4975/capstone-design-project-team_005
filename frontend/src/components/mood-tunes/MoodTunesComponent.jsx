@@ -7,6 +7,8 @@ const MoodTunesComponent = () => {
   const navigate = useNavigate();
   const videoRef = useRef(null);
   const [isOpenCamera, setIsOpenCamera] = useState(true);
+  const [songs, setSongs] = useState({});
+  const [emotion, setEmotion] = useState("");
 
   const pageRender = (e) => {
     e.preventDefault();
@@ -15,7 +17,6 @@ const MoodTunesComponent = () => {
     const { path } = e.currentTarget.dataset;
     navigate(path);
   };
-
 
   useEffect(() => {
     const getVideo = async () => {
@@ -37,8 +38,21 @@ const MoodTunesComponent = () => {
         setIsOpenCamera(false);
       }
     };
-
     getVideo();
+  }, []);
+
+  const captureImageAndPredict = useCallback(async () => {
+  const video = videoRef.current;
+  const canvas = document.createElement('canvas');
+  canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+  canvas.toBlob(async (blob) => {
+    const formData = new FormData();
+    formData.append('image', blob);
+    const response = await axios.post('http://127.0.0.1:8000/predict/final', formData);
+    console.log(response.data);
+    setSongs(response.data.songs);
+    setEmotion(response.data.emotion);
+    });
   }, []);
 
   return (
@@ -47,34 +61,38 @@ const MoodTunesComponent = () => {
         <div className="recognition-box">
           <h2>Face Recognition</h2>
           <p>
-            Please allow camera access to analyze your facial <br /> expression
+            Please allow camera access to analyze your facial <br/> expression
             and determine your mood.
           </p>
           {isOpenCamera ? (
-            <div className="video-on">
-              <video
-                ref={videoRef}
-                style={{ width: "100%", height: "300px" }}
-                screenshotFormat="image/jpeg"
-                autoPlay
-                muted
-              />
-            </div>
+              <div className="video-on">
+                <video
+                    ref={videoRef}
+                    style={{width: "100%", height: "300px"}}
+                    screenshotFormat="image/jpeg"
+                    autoPlay
+                    muted
+                />
+                <button className="ui-button" onClick={captureImageAndPredict}>
+                  Capture and Predict
+                </button>
+              </div>
           ) : (
-            <div className="video-off">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="80px"
-                viewBox="0 -960 960 960"
-                width="80px"
-                fill="#5f6368"
-              >
-                <path d="M480-260q75 0 127.5-52.5T660-440q0-75-52.5-127.5T480-620q-75 0-127.5 52.5T300-440q0 75 52.5 127.5T480-260Zm0-80q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM160-120q-33 0-56.5-23.5T80-200v-480q0-33 23.5-56.5T160-760h126l74-80h240l74 80h126q33 0 56.5 23.5T880-680v480q0 33-23.5 56.5T800-120H160Zm0-80h640v-480H638l-73-80H395l-73 80H160v480Zm320-240Z" />
-              </svg>
-            </div>
+              <div className="video-off">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="80px"
+                    viewBox="0 -960 960 960"
+                    width="80px"
+                    fill="#5f6368"
+                >
+                  <path
+                      d="M480-260q75 0 127.5-52.5T660-440q0-75-52.5-127.5T480-620q-75 0-127.5 52.5T300-440q0 75 52.5 127.5T480-260Zm0-80q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM160-120q-33 0-56.5-23.5T80-200v-480q0-33 23.5-56.5T160-760h126l74-80h240l74 80h126q33 0 56.5 23.5T880-680v480q0 33-23.5 56.5T800-120H160Zm0-80h640v-480H638l-73-80H395l-73 80H160v480Zm320-240Z"/>
+                </svg>
+              </div>
           )}
           <div className="mood">
-            <h3>Your mood: <span>Happy</span></h3>
+            <h3>Your mood: <span>{emotion}</span></h3>
           </div>
         </div>
         <div className="music-box">
@@ -90,9 +108,6 @@ const MoodTunesComponent = () => {
                   <span>곡명</span>
                 </dd>
                 <dd>
-                  <span>아티스트</span>
-                </dd>
-                <dd>
                   <span>좋아요</span>
                 </dd>
                 <dd>
@@ -100,22 +115,24 @@ const MoodTunesComponent = () => {
                 </dd>
               </dl>
               <div class="table-body">
-                <dl class="table-row">
-                  <dd>모두 행복해져라</dd>
-                  <dd>한올</dd>
-                  <dd>
-                    <div className="like-btn">
-                      <input type="checkbox" id={`music-1`} />
-                      <label role="button" htmlFor={`music-1`}></label>
-                    </div>
-                  </dd>
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-1`} />
-                      <label role="button" htmlFor={`play-1`}></label>
-                    </div>
-                  </dd>
-                </dl>
+                {Object.entries(songs).map(([songName, songUrl], index) => (
+                  <dl class="table-row" key={index}>
+                    <dd>{songName}</dd>
+                    <dd>
+                      <div className="like-btn">
+                        <input type="checkbox" id={`music-${index}`} />
+                        <label role="button" htmlFor={`music-${index}`}></label>
+                      </div>
+                    </dd>
+                    <dd>
+                      <div className="play-btn">
+                        <a href={songUrl} target="_blank" rel="noopener noreferrer">
+                          <img src="/images/play.svg" alt="play" width={30} />
+                        </a>
+                      </div>
+                    </dd>
+                  </dl>
+                ))}
               </div>
             </li>
           </ul>

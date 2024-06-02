@@ -9,12 +9,10 @@ const LikesComponent = () => {
           <p>32 songs</p>
           <ul className="music-list">
             <li class="music-list-table">
+
               <dl class="table-header">
                 <dd>
                   <span>곡명</span>
-                </dd>
-                <dd>
-                  <span>아티스트</span>
                 </dd>
                 <dd>
                   <span>재생</span>
@@ -23,8 +21,6 @@ const LikesComponent = () => {
               <div class="table-body">
                 <dl class="table-row">
                   <dd>My mistake</dd>
-                  <dd>Gabriel Aplin</dd>
-
                   <dd>
                     <div className="play-btn">
                       <input type="checkbox" id={`play-2`} />

@@ -1,6 +1,7 @@
 from urllib.parse import quote_plus
 
 from fastapi import FastAPI, UploadFile, File
+from starlette.middleware.cors import CORSMiddleware
 
 from ai.utils import (
     transform_image,
@@ -12,6 +13,12 @@ from ai.utils import (
 from ai.schemas import ImageResponse
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+)
 
 
 @app.post("/predict/emotion", response_model=ImageResponse)
@@ -45,6 +52,9 @@ async def predict_final(image: UploadFile = File(...)):
     model = load_model("model/best.pt")
     image = transform_image(await image.read())
     emotion = get_prediction(model, image)
+
+    if emotion == "unknown":
+        emotion = "happy"
 
     labeled_songs_dataset = read_labeled_songs_file("music_list.txt")
     recommended_songs = find_songs_by_emotion(emotion, labeled_songs_dataset)

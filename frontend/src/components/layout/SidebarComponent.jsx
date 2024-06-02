@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 const SidebarComponent = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log("location", location);
 
   const pageRender = (e) => {
     e.preventDefault();
