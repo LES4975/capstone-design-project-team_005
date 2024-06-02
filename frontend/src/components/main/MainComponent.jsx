@@ -30,14 +30,6 @@ const MainComponent = () => {
               <span>MoodTunes</span>
             </a>
           </div>
-          <div className="main-header-btn">
-            <button type="button" data-path="/login" onClick={pageRender}>
-              Login
-            </button>
-            <button type="button" data-path="/register" onClick={pageRender}>
-              Register
-            </button>
-          </div>
         </div>
       </header>
       <main className="main-contents">
@@ -62,17 +54,10 @@ const MainComponent = () => {
           </div>
           <button
             className="btn btn--reverse"
-            data-path="/login"
+            data-path="/home"
             onClick={pageRender}
           >
-            Login
-          </button>
-          <button
-            className="btn btn--reverse"
-            data-path="/register"
-            onClick={pageRender}
-          >
-            Register
+            Get Started
           </button>
         </div>
       </main>

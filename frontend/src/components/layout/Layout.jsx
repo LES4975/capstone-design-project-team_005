@@ -22,27 +22,6 @@ const Layout = () => {
           <SidebarComponent />
           <div className="layout-right">
             <div className="layout-header">
-              <div className="mypage">
-                <div
-                  class="material-icons"
-                  onClick={() => setIsMenuOpen((prev) => !prev)}
-                >
-                  account_circle
-                </div>
-                {isMenuOpen && (
-                  <div className="side-header-menu">
-                    <div className="menu-item my">suyun0601</div>
-                    <div
-                      className="menu-item logout"
-                      data-path="/"
-                      onClick={pageRender}
-                    >
-                      <div class="material-icons">logout</div>
-                      로그아웃
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
             <Outlet />
           </div>
