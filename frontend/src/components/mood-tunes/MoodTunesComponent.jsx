@@ -73,9 +73,15 @@ const MoodTunesComponent = () => {
                     autoPlay
                     muted
                 />
-                <button className="ui-button" onClick={captureImageAndPredict}>
-                  Capture and Predict
-                </button>
+                <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
+                  <button className={"btn"} onClick={captureImageAndPredict}>
+                    Capture and Predict
+                  </button>
+
+                  <div className="mood">
+                    <h3>Your mood: <span>{emotion}</span></h3>
+                  </div>
+                </div>
               </div>
           ) : (
               <div className="video-off">
@@ -91,9 +97,7 @@ const MoodTunesComponent = () => {
                 </svg>
               </div>
           )}
-          <div className="mood">
-            <h3>Your mood: <span>{emotion}</span></h3>
-          </div>
+
         </div>
         <div className="music-box">
           <h2>Recommended Music Lists</h2>
