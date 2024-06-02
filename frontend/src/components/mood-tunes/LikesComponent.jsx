@@ -22,17 +22,6 @@ const LikesComponent = () => {
               </dl>
               <div class="table-body">
                 <dl class="table-row">
-                  <dd>모두 행복해져라</dd>
-                  <dd>한올</dd>
-
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-1`} />
-                      <label role="button" htmlFor={`play-1`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
                   <dd>My mistake</dd>
                   <dd>Gabriel Aplin</dd>
 
@@ -43,94 +32,7 @@ const LikesComponent = () => {
                     </div>
                   </dd>
                 </dl>
-                <dl class="table-row">
-                  <dd>Thursday</dd>
-                  <dd>Jess Glynne</dd>
 
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-3`} />
-                      <label role="button" htmlFor={`play-3`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>모두 행복해져라</dd>
-                  <dd>한올</dd>
-
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-1`} />
-                      <label role="button" htmlFor={`play-1`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>My mistake</dd>
-                  <dd>Gabriel Aplin</dd>
-
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-2`} />
-                      <label role="button" htmlFor={`play-2`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>Thursday</dd>
-                  <dd>Jess Glynne</dd>
-
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-3`} />
-                      <label role="button" htmlFor={`play-3`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>모두 행복해져라</dd>
-                  <dd>한올</dd>
-
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-1`} />
-                      <label role="button" htmlFor={`play-1`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>My mistake</dd>
-                  <dd>Gabriel Aplin</dd>
-
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-2`} />
-                      <label role="button" htmlFor={`play-2`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>Thursday</dd>
-                  <dd>Jess Glynne</dd>
-
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-3`} />
-                      <label role="button" htmlFor={`play-3`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>모두 행복해져라</dd>
-                  <dd>한올</dd>
-
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-1`} />
-                      <label role="button" htmlFor={`play-1`}></label>
-                    </div>
-                  </dd>
-                </dl>
               </div>
             </li>
           </ul>

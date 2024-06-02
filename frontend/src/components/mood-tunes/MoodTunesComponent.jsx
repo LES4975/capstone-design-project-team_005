@@ -16,28 +16,6 @@ const MoodTunesComponent = () => {
     navigate(path);
   };
 
-  const capture = useCallback(async () => {
-    const imageSrc = videoRef.current.getScreenshot();
-    const blob = await fetch(imageSrc).then((res) => res.blob());
-
-    const formData = new FormData();
-    formData.append("image", blob, "webcam_image.jpg");
-
-    try {
-      const response = await axios.post(
-        "http://0.0.0.0:5000/predict",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("Response:", response.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }, []);
 
   useEffect(() => {
     const getVideo = async () => {
@@ -54,6 +32,7 @@ const MoodTunesComponent = () => {
           });
         }
       } catch (error) {
+        console.log("Error:", error)
         alert("비디오 사용을 허용해주세요.");
         setIsOpenCamera(false);
       }
@@ -95,11 +74,7 @@ const MoodTunesComponent = () => {
             </div>
           )}
           <div className="mood">
-            <h3>Your mood:</h3>
-            <div className="mood-icon">
-              <div class="material-icons smile">sentiment_very_satisfied</div>
-              <span>Happy</span>
-            </div>
+            <h3>Your mood: <span>Happy</span></h3>
           </div>
         </div>
         <div className="music-box">
@@ -141,48 +116,16 @@ const MoodTunesComponent = () => {
                     </div>
                   </dd>
                 </dl>
-                <dl class="table-row">
-                  <dd>My mistake</dd>
-                  <dd>Gabriel Aplin</dd>
-                  <dd>
-                    <div className="like-btn">
-                      <input type="checkbox" id={`music-2`} />
-                      <label role="button" htmlFor={`music-2`}></label>
-                    </div>
-                  </dd>
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-2`} />
-                      <label role="button" htmlFor={`play-2`}></label>
-                    </div>
-                  </dd>
-                </dl>
-                <dl class="table-row">
-                  <dd>Thursday</dd>
-                  <dd>Jess Glynne</dd>
-                  <dd>
-                    <div className="like-btn">
-                      <input type="checkbox" id={`music-3`} />
-                      <label role="button" htmlFor={`music-3`}></label>
-                    </div>
-                  </dd>
-                  <dd>
-                    <div className="play-btn">
-                      <input type="checkbox" id={`play-3`} />
-                      <label role="button" htmlFor={`play-3`}></label>
-                    </div>
-                  </dd>
-                </dl>
               </div>
             </li>
           </ul>
           <div className="bottom-btn">
             <button
               className="btn btn--reverse"
-              data-path="/chatbot"
+              data-path="/likes"
               onClick={pageRender}
             >
-              Move to Chatbot Service
+              Check Likes
             </button>
           </div>
         </div>
