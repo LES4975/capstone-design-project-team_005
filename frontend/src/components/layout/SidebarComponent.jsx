@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const SidebarComponent = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  console.log("location", location);
 
   const pageRender = (e) => {
     e.preventDefault();
@@ -42,7 +43,7 @@ const SidebarComponent = () => {
           className={`${location.pathname === "/home" ? "selected" : ""}`}
         >
           <div class="material-icons">home</div>
-          <button type="button">Home</button>
+          <button type="button">홈</button>
         </li>
         <li
           data-path="/mood-tunes"
@@ -51,8 +52,8 @@ const SidebarComponent = () => {
         >
           <div class="material-icons">music_note</div>
           <button type="button">
-            Facial Recognition & <br />
-            Music Playlist
+            표정 분석 / <br />
+            맞춤형 플레이리스트
           </button>
         </li>
         <li
@@ -61,7 +62,7 @@ const SidebarComponent = () => {
           className={`${location.pathname === "/chatbot" ? "selected" : ""}`}
         >
           <div class="material-icons">sms</div>
-          <button type="button">Chatbot</button>
+          <button type="button">챗봇</button>
         </li>
         <li
           data-path="/likes"
@@ -69,7 +70,7 @@ const SidebarComponent = () => {
           className={`${location.pathname === "/likes" ? "selected" : ""}`}
         >
           <div class="material-icons">favorite</div>
-          <button type="button">Likes</button>
+          <button type="button">좋아요한</button>
         </li>
       </ul>
     </div>

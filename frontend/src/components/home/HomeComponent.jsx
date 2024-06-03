@@ -21,7 +21,7 @@ const HomeComponent = () => {
           onClick={pageRender}
         >
           <div className="">
-            <h2 className="title">Facial Recognition</h2>
+            <h2 className="title">표정 분석</h2>
             <div className="icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -33,11 +33,11 @@ const HomeComponent = () => {
                 <path d="M480-800q134 0 227 93t93 227q0 134-93 227t-227 93q-134 0-227-93t-93-227q0-134 93-227t227-93Zm0 560q100 0 170-70t70-170q0-100-70-170t-170-70q-100 0-170 70t-70 170q0 100 70 170t170 70Zm0-100q48 0 86-27.5t54-72.5H340q16 45 54 72.5t86 27.5ZM340-560q0 17 11.5 28.5T380-520q17 0 28.5-11.5T420-560q0-17-11.5-28.5T380-600q-17 0-28.5 11.5T340-560Zm200 0q0 17 11.5 28.5T580-520q17 0 28.5-11.5T620-560q0-17-11.5-28.5T580-600q-17 0-28.5 11.5T540-560ZM40-720v-120q0-33 23.5-56.5T120-920h120v80H120v120H40ZM240-40H120q-33 0-56.5-23.5T40-120v-120h80v120h120v80Zm480 0v-80h120v-120h80v120q0 33-23.5 56.5T840-40H720Zm120-680v-120H720v-80h120q33 0 56.5 23.5T920-840v120h-80ZM480-480Z" />
               </svg>
             </div>
-            <h2>Face Recognized</h2>
-            <p>Your face has been successfully recognized.</p>
+            <h2>Facial Expression Analysis</h2>
+            <p>표정 분석을 통해 당신의 감정을 세밀하게 진단해드립니다.</p>
           </div>
           <div className="">
-            <h2 className="title">Music Playlist</h2>
+            <h2 className="title">맞춤형 플레이리스트</h2>
             <div className="icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -50,11 +50,11 @@ const HomeComponent = () => {
               </svg>
             </div>
             <h2>Personalized Playlist</h2>
-            <p>Your personalized music playlist is ready.</p>
+            <p>맞춤형 음악 플레이리스트를 추천받으세요.</p>
           </div>
         </div>
         <div className="home-box" data-path="/chatbot" onClick={pageRender}>
-          <h2 className="title">Chatbot</h2>
+          <h2 className="title">챗봇</h2>
           <div className="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -66,11 +66,11 @@ const HomeComponent = () => {
               <path d="M280-240q-17 0-28.5-11.5T240-280v-80h520v-360h80q17 0 28.5 11.5T880-680v600L720-240H280ZM80-280v-560q0-17 11.5-28.5T120-880h520q17 0 28.5 11.5T680-840v360q0 17-11.5 28.5T640-440H240L80-280Zm520-240v-280H160v280h440Zm-440 0v-280 280Z" />
             </svg>
           </div>
-          <h2>Chatbot Enabled</h2>
-          <p>You can now with the AI assistant.</p>
+          <h2>Chatbot Service</h2>
+          <p>AI 비서를 활용할 수 있습니다.</p>
         </div>
         <div className="home-box" data-path="/likes" onClick={pageRender}>
-          <h2 className="title">Likes</h2>
+          <h2 className="title">좋아요한</h2>
           <div className="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +83,7 @@ const HomeComponent = () => {
             </svg>
           </div>
           <h2>Favorite Tracks</h2>
-          <p>You can check the playlists you have liked.</p>
+          <p>"좋아요"를 누른 음악 목록을 확인할 수 있습니다.</p>
         </div>
       </section>
     </main>

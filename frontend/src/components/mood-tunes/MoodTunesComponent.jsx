@@ -49,27 +49,50 @@ const MoodTunesComponent = () => {
   }, []);
 
   const captureImageAndPredict = useCallback(async () => {
-  const video = videoRef.current;
-  const canvas = document.createElement('canvas');
-  canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-  canvas.toBlob(async (blob) => {
-    const formData = new FormData();
-    formData.append('image', blob);
-    const response = await axios.post('http://127.0.0.1:8000/predict/final', formData);
-    console.log(response.data);
-    setSongs(response.data.songs);
-    setEmotion(response.data.emotion);
-    });
+    const video = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+    canvas.toBlob(async (blob) => {
+      // 이미지를 서버로 전송하는 코드
+      const formData = new FormData();
+      formData.append('image', blob);
+      const response = await axios.post('http://127.0.0.1:8000/predict/final', formData);
+      setSongs(response.data.songs);
+      setEmotion(response.data.emotion);
+
+      // 이미지를 로컬 파일로 다운로드하는 코드
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'image.jpg';
+      link.click();
+    }, 'image/jpeg');
   }, []);
+
+  const getEmotionIcon = (emotion) => {
+  switch (emotion) {
+    case 'happy':
+      return <div className="material-icons" style={{color: "limegreen"}}>sentiment_very_satisfied</div>;
+    case 'sad':
+      return <div className="material-icons" style={{color: "blue"}}>sentiment_dissatisfied</div>;
+    case 'angry':
+      return <div className="material-icons" style={{color: "red"}}>sentiment_very_dissatisfied</div>;
+    case 'anxious':
+      return <div className="material-icons" style={{color: "grey"}}>sentiment_neutral</div>;
+    default:
+      return null;
+  }
+};
 
   return (
     <div className="music-wrapper">
       <main className="music-contents">
         <div className="recognition-box">
-          <h2>Face Recognition</h2>
+          <h2>표정 분석</h2>
           <p>
-            Please allow camera access to analyze your facial <br/> expression
-            and determine your mood.
+            표정 분석과 기분 진단을 위해 카메라 접근을 허용해주세요.
           </p>
           {isOpenCamera ? (
               <div className="video-on">
@@ -82,12 +105,8 @@ const MoodTunesComponent = () => {
                 />
                 <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
                   <button className={"btn"} onClick={captureImageAndPredict}>
-                    Capture and Predict
+                    화면 캡처하기
                   </button>
-
-                  <div className="mood">
-                    <h3>Your mood: <span>{emotion}</span></h3>
-                  </div>
                 </div>
               </div>
           ) : (
@@ -105,13 +124,19 @@ const MoodTunesComponent = () => {
               </div>
           )}
 
+        <div className="mood">
+          <h3><br/><br/><br/>당신의 기분:</h3>
+          <div className="mood-icon">
+            <div className={"mood-item"}>
+              <span>{getEmotionIcon(emotion)}{emotion} </span>
+            </div>
+          </div>
         </div>
-        <div className="music-box">
-          <h2>Recommended Music Lists</h2>
-          <p>
-            Based on your mood, we’ve curated personalized playlists <br /> for
-            you to enjoy.
-          </p>
+
+        </div>
+          <div className="music-box">
+          <h2>맞춤형 플레이리스트</h2>
+          <p>당신의 기분에 맞춰 준비한 음악 플레이리스트를 즐겨보세요.</p>
           <ul className="music-list">
             <li class="music-list-table">
               <dl class="table-header">
@@ -151,9 +176,9 @@ const MoodTunesComponent = () => {
             <button
                 className="btn btn--reverse"
                 data-path="/likes"
-              onClick={pageRender}
+                onClick={pageRender}
             >
-              Check Likes
+              좋아요 목록 보기
             </button>
           </div>
         </div>

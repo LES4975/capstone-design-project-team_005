@@ -20,9 +20,9 @@ const LikesComponent = () => {
     <div className="likes-wrapper">
       <main className="likes-contents">
         <div className="likes-box">
-          <h2>Liked Playlists</h2>
-          <p>{likedSongs.length} songs</p>
-          <button onClick={handleClearLikes}>Clear Likes</button>
+          <h2>"좋아요" 를 누른 음악 목록</h2>
+          <p>{likedSongs.length} 개의 음악</p>
+          <button onClick={handleClearLikes}>좋아요 초기화하기</button>
           <ul className="music-list">
             <li class="music-list-table">
               <dl class="table-header">
