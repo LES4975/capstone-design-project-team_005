@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 
 const ChatbotComponent = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
-    // 로컬 스토리지에서 대화 기록 불러오기
     const savedMessages =
       JSON.parse(localStorage.getItem("chatMessages")) || [];
     setMessages(savedMessages);
   }, []);
 
   useEffect(() => {
-    // 대화 기록이 변경될 때마다 로컬 스토리지에 저장
     localStorage.setItem("chatMessages", JSON.stringify(messages));
   }, [messages]);
 
-  const sendMessage = async () => {
-    if (input.trim() === "") return;
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const sendMessage = useCallback(async () => {
+    if (!input.trim()) return;
 
     const newMessages = [...messages, { sender: "me", text: input }];
     setMessages(newMessages);
@@ -38,7 +41,7 @@ const ChatbotComponent = () => {
     } catch (error) {
       console.error("Error sending message:", error);
     }
-  };
+  }, [input, messages]);
 
   return (
     <div className="chat-wrapper">
@@ -73,19 +76,18 @@ const ChatbotComponent = () => {
                   </div>
                 </div>
               ))}
+              <div ref={chatEndRef} />
             </div>
           </section>
           <div className="chat-input">
-            <div>
-              <input
-                type="text"
-                placeholder="MoodTunes 챗봇에게 무엇이든 물어보세요!"
-                className="input"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="MoodTunes 챗봇에게 무엇이든 물어보세요!"
+              className="input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+            />
             <button className="send-btn" onClick={sendMessage}>
               <img src="/images/icon_send.svg" alt="send" />
             </button>

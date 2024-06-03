@@ -104,7 +104,7 @@ async def chat(request: ChatRequest):
                 }
             ],
             max_tokens=150,
-            temperature=0.3
+            temperature=0
         )
         response_text = response.choices[0].message.content
         return ChatResponse(response=response_text)
