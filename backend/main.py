@@ -103,7 +103,7 @@ async def chat(request: ChatRequest):
                     "content": request.message
                 }
             ],
-            max_tokens=150,
+            max_tokens=300,
             temperature=0
         )
         response_text = response.choices[0].message.content
