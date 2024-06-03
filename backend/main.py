@@ -1,6 +1,6 @@
 from urllib.parse import quote_plus
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Request
 from starlette.middleware.cors import CORSMiddleware
 
 from ai.utils import (
@@ -12,12 +12,25 @@ from ai.utils import (
 )
 from ai.schemas import ImageResponse
 
+#-----------챗봇 라이브러리와 키
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+import logging
+
+load_dotenv()
+client = OpenAI(api_key=os.getenv("CHATBOT_KEY"))
+#-------------------------
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -26,7 +39,7 @@ async def predict_emotion(image: UploadFile = File(...)):
     """
     이미지 입력을 받아, 예측된 감정을 반환합니다.
     """
-    model = load_model("model/best.pt")
+    model = load_model("model/3rd_best.pt")
     image = transform_image(await image.read())
     emotion = get_prediction(model, image)
 
@@ -49,7 +62,7 @@ async def predict_final(image: UploadFile = File(...)):
     """
     이미지 입력을 받아, 추천 곡과 예측된 감정을 반환합니다.
     """
-    model = load_model("model/best.pt")
+    model = load_model("model/3rd_best.pt")
     image = transform_image(await image.read())
     emotion = get_prediction(model, image)
 
@@ -60,3 +73,52 @@ async def predict_final(image: UploadFile = File(...)):
     recommended_songs = find_songs_by_emotion(emotion, labeled_songs_dataset)
 
     return {"emotion": emotion, "songs": recommended_songs}
+
+#---------------------------------
+#챗봇 파트
+
+class Message(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list[Message]
+
+class ChatResponse(BaseModel):
+    response: str
+
+@app.post("/chatbot", response_model=ChatResponse)
+async def chat(request: ChatRequest):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages = request.history + [
+                {
+                    "role": "system",
+                    "content": "당신은 moodTunes의 챗봇입니다. 사용자가 기능을 사용하고 싶다고 질문하면 해당하는 기능을 제공하거나, 사용자의 요청이나 피드백을 수용할 수 있습니다. 되도록 사용자의 질문에 대해 짧고 간결하고 친절하게 대답해주세요."
+                },
+                {
+                   "role": "user",
+                    "content": request.message
+                }
+            ],
+            max_tokens=150,
+            temperature=0.3
+        )
+        response_text = response.choices[0].message.content
+        return ChatResponse(response=response_text)
+    except Exception as e:
+        logging.error(f"Error during chat processing: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    # 예외 처리기 추가
+@app.exception_handler(Exception)
+async def validation_exception_handler(request: Request, exc: Exception):
+    logging.error(f"Unhandled exception: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An unexpected error occurred. Please try again later."},
+    )
+    
+# 애플리케이션 실행 명령어: uvicorn main:app --reload

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import * as faceapi from "face-api.js";
 
 const MoodTunesComponent = () => {
   const navigate = useNavigate();
