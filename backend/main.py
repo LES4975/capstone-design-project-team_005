@@ -1,3 +1,4 @@
+import csv
 from urllib.parse import quote_plus
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Request
@@ -19,6 +20,8 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import logging
+from difflib import SequenceMatcher
+from typing import Optional
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("CHATBOT_KEY"))
@@ -85,13 +88,51 @@ class ChatRequest(BaseModel):
     message: str
     history: list[Message]
 
+
 class ChatResponse(BaseModel):
     response: str
+    special_component: Optional[str] = None
+
+#시나리오 csv 파일 읽기
+def load_responses_from_csv(csv_file):
+    responses = {}
+    with open(csv_file, 'r', newline='', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            question = row['question']
+            answer = row['answer']
+            responses[question] = answer
+    return responses
+
+responses = load_responses_from_csv('questions.csv')
 
 @app.post("/chatbot", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     try:
-        response = client.chat.completions.create(
+        max_ratio = 0
+        selected_answer = None
+        emotions = ['기쁨', '슬픔', '분노', '불안']
+        for key in responses:
+            matcher = SequenceMatcher(None, key.lower(), request.message.lower())
+            ratio = matcher.ratio()
+            if ratio > max_ratio:
+                max_ratio = ratio
+                selected_answer = responses[key]
+        
+        # 특정 컴포넌트 출력을 위한 변수
+        special_component = None
+
+        # selected_answer의 각 원소가 emotions 리스트에 포함되는지 확인
+        for emotion in emotions:
+            if emotion in selected_answer:
+                # 특정 컴포넌트 생성 또는 할당
+                special_component = emotion
+                break  # 하나 이상 해당될 경우 중단
+
+        if max_ratio >= 0.85:  # 예측된 정확도 임계값
+            return ChatResponse(response=selected_answer)
+        else:
+            response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages = request.history + [
                 {
@@ -107,7 +148,13 @@ async def chat(request: ChatRequest):
             temperature=0
         )
         response_text = response.choices[0].message.content
-        return ChatResponse(response=response_text)
+
+        # 특정 컴포넌트가 있는 경우 함께 반환
+        if special_component:
+            return ChatResponse(response=response_text, special_component=special_component)
+        else:
+            return ChatResponse(response=response_text)
+        
     except Exception as e:
         logging.error(f"Error during chat processing: {e}")
         raise HTTPException(status_code=500, detail=str(e))

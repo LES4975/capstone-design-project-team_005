@@ -36,8 +36,16 @@ const ChatbotComponent = () => {
         })),
       });
 
-      const botMessage = response.data.response;
-      setMessages([...newMessages, { sender: "bot", text: botMessage }]);
+      // JSON으로 파싱하여 데이터 추출
+      const responseData = response.data;
+      const botMessage = responseData.response;
+      const specialComponent = responseData.special_component;
+
+      // 특정 컴포넌트가 있는 경우 함께 렌더링
+      setMessages([
+        ...newMessages,
+        { sender: "bot", text: botMessage, specialComponent: specialComponent },
+      ]);
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -72,6 +80,12 @@ const ChatbotComponent = () => {
                   <div className="chat-row">
                     <div className="chat">
                       <p>{msg.text}</p>
+                      {/* 특정 컴포넌트가 있을 경우 렌더링
+                      {msg.specialComponent && (
+                        <div className="special-component">
+                          {msg.specialComponent}
+                        </div>
+                      )} */}
                     </div>
                   </div>
                 </div>
