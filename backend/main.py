@@ -111,7 +111,7 @@ async def chat(request: ChatRequest):
     try:
         max_ratio = 0
         selected_answer = None
-        emotions = ['기쁨', '슬픔', '분노', '불안']
+        emotions = ['[기쁨]', '[슬픔]', '[분노]', '[불안]']
         for key in responses:
             matcher = SequenceMatcher(None, key.lower(), request.message.lower())
             ratio = matcher.ratio()
@@ -129,7 +129,10 @@ async def chat(request: ChatRequest):
                 special_component = emotion
                 break  # 하나 이상 해당될 경우 중단
 
-        if max_ratio >= 0.85:  # 예측된 정확도 임계값
+        if max_ratio >= 0.8:  # 예측된 정확도 임계값
+            if "좋아요" in selected_answer and "음악들을 표시하겠습니다" in selected_answer:
+                special_component = "playlist"
+            return ChatResponse(response=selected_answer, special_component=special_component)
             return ChatResponse(response=selected_answer)
         else:
             response = client.chat.completions.create(
@@ -137,7 +140,7 @@ async def chat(request: ChatRequest):
             messages = request.history + [
                 {
                     "role": "system",
-                    "content": "당신은 moodTunes의 챗봇입니다. 사용자가 기능을 사용하고 싶다고 질문하면 해당하는 기능을 제공하거나, 사용자의 요청이나 피드백을 수용할 수 있습니다. 되도록 사용자의 질문에 대해 짧고 간결하고 친절하게 대답해주세요."
+                    "content": "당신은 MoodTunes의 챗봇입니다. 사용자가 기능을 사용하고 싶다고 질문하면 해당하는 기능을 제공하거나, 사용자의 요청이나 피드백을 수용할 수 있습니다. 되도록 사용자의 질문에 대해 짧고 간결하고 친절하게 대답해주세요."
                 },
                 {
                    "role": "user",

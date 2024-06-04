@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
+import MsgLikes from "./MsgLikes.jsx";
 
 const ChatbotComponent = () => {
   const [messages, setMessages] = useState([]);
@@ -80,6 +81,11 @@ const ChatbotComponent = () => {
                   <div className="chat-row">
                     <div className="chat">
                       <p>{msg.text}</p>
+                      {msg.specialComponent === "playlist" && (
+                        <div className="playlist-component">
+                          <MsgLikes />
+                        </div>
+                      )}
                       {/* 특정 컴포넌트가 있을 경우 렌더링
                       {msg.specialComponent && (
                         <div className="special-component">
